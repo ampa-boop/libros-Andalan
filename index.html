@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercadillo libros segunda mano AMPA Andalan</title>
+    <style>
+        /* [Mantener estilos anteriores] */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f0f2f5; color: #333; }
+        header { background-color: #1a5276; color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-title h1 { margin: 0; }
+        .header-title p { margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;}
+        button { border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        .admin-btn { background-color: #e67e22; color: white; padding: 10px 20px; width: auto; }
+        .admin-btn:hover { background-color: #d35400; }
+        .login-area { background: white; max-width: 400px; margin: 15px auto 0; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; display: none; }
+        .login-area input { padding: 10px; width: 60%; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px; }
+        .login-area button { background-color: #2980b9; color: white; padding: 10px 15px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+        .form-section { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); flex: 1; min-width: 300px; display: none; }
+        .form-section.visible { display: block; }
+        .form-section h2 { margin-top: 0; color: #1a5276; }
+        .form-section input, .form-section select, .submit-btn { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        .submit-btn { background-color: #27ae60; color: white; font-size: 1.1rem; }
+        .ads-section { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; width: 100%; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 15px; background-color: #eee; }
+        .card h3 { margin: 0 0 10px 0; color: #2c3e50; }
+        .tag { display: inline-block; background: #e8f8f5; color: #117a65; padding: 5px 10px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; width: fit-content; }
+        .price { font-size: 1.5em; color: #e74c3c; font-weight: bold; margin: 10px 0; }
+        .estado { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 15px;}
+        .contact { margin-top: auto; background: #ebedef; padding: 10px; text-align: center; border-radius: 6px; font-weight: bold; color: #2c3e50; }
+
+        /* NUEVO: Estilo para el botón de borrar */
+        .delete-btn {
+            display: none; /* Oculto por defecto */
+            background-color: #ff4757;
+            color: white;
+            padding: 8px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            width: 100%;
+        }
+        /* Solo se muestra cuando el admin está activo */
+        .admin-mode .delete-btn {
+            display: block;
+        }
+    </style>
+</head>
+<body id="mainBody">
+
+    <header>
+        <div class="header-title" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Logo IES ANDALAN" style="height: 60px;">
+            <div>
+                <h1 style="margin: 0;">BANCO DE LIBROS DE LA AMPA DEL IES ANDALÁN</h1>
+                <p style="margin: 5px 0 0 0;">Si quieres vender tus libros de lectura o de Bachillerato, manda un mail a ampa@iesandalan.es diciéndonos el libro, el curso, si está poco usado o bastante usado, una foto, el dinero que pides y una forma de contacto (mail o teléfono). Nosotras lo publicaremos</p>
+            </div>
+        </div>
+        <button class="admin-btn" id="loginBtn">Acceso Admin</button>
+    </header>
+
+    <div class="login-area" id="loginArea">
+        <input type="password" id="passwordInput" placeholder="Contraseña...">
+        <button id="verifyBtn">Entrar</button>
+    </div>
+
+    <div class="container">
+        <div class="form-section" id="adminPanel">
+            <h2>Publicar un Libro</h2>
+            <form id="adForm">
+                <input type="text" id="titulo" placeholder="Título del Libro" required>
+                <select id="asignatura" required>
+                    <option value="Biología y Geología y Ciencias Ambientales 1º">Biología y Geología y Ciencias Ambientales 1º</option>
+                    <option value="Física y Química 1º">Física y Química 1º</option>
+                    <option value="Tecnología e ingeniería 1º">Tecnología e ingeniería 1º</option>
+                    <option value="Historia del mundo contemporáneo 1º">Historia del mundo contemporáneo 1º</option>
+                    <option value="Inglés I">Inglés I</option>
+		    <option value="Matemáticas I">Matemáticas I</option>
+                    <option value="Matemáticas aplicadas a las CCSS I">Matemáticas aplicadas a las CCSS I</option>
+                    <option value="Dibujo técnico I">Dibujo técnico I</option>
+                    <option value="Dibujo técnico aplicado a las artes plásticas I">Dibujo técnico aplicado a las artes plásticas I</option>
+                    <option value="Francés I">Francés I</option>
+                    <option value="Economía">Economía</option>
+                    <option value="Otros">Otros</option>
+                    <option value="Otros">Otros</option>
+                </select>
+                <select id="estado" required>
+                    <option value="Poco usado">Poco usado</option>
+                    <option value="Bastante usado">Bastante usado</option>
+                </select>
+                <input type="number" id="precio" placeholder="Precio (€)" required>
+                <input type="text" id="contacto" placeholder="Teléfono o Email" required>
+                <input type="file" id="imagen" accept="image/*" required>
+                <button type="submit" class="submit-btn">Publicar Anuncio</button>
+            </form>
+        </div>
+
+        <div class="ads-section" id="adsBoard">
+            <p>Cargando anuncios...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        // IMPORTANTE: Añadimos 'deleteDoc' y 'doc'
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // [TU CONFIGURACIÓN DE FIREBASE AQUÍ]
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXdLssEvHe-zFuAXuNBMVUfdPSstq3458",
+            authDomain: "librobachi.firebaseapp.com",
+            projectId: "librobachi",
+            storageBucket: "librobachi.firebasestorage.app",
+            messagingSenderId: "620033514788",
+            appId: "1:620033514788:web:013473b767cc34224667b1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- Lógica de Admin ---
+        const ADMIN_PASSWORD = "bachillerato24";
+        const loginBtn = document.getElementById('loginBtn');
+        const mainBody = document.getElementById('mainBody');
+
+        loginBtn.addEventListener('click', () => {
+            if (adminPanel.classList.contains('visible')) {
+                adminPanel.classList.remove('visible');
+                mainBody.classList.remove('admin-mode'); // Quitamos modo admin
+                loginBtn.innerText = "Acceso Admin";
+                loginArea.style.display = "none";
+            } else {
+                loginArea.style.display = "block";
+            }
+        });
+
+        verifyBtn.addEventListener('click', () => {
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                adminPanel.classList.add('visible');
+                mainBody.classList.add('admin-mode'); // Activamos modo admin (muestra botones borrar)
+                loginArea.style.display = "none";
+                loginBtn.innerText = "Cerrar Admin";
+                passwordInput.value = "";
+            } else {
+                alert("Error");
+            }
+        });
+
+        // --- Mostrar anuncios y BORRAR ---
+        const adsBoard = document.getElementById('adsBoard');
+        const q = query(collection(db, "anuncios"), orderBy("fecha", "desc"));
+
+        onSnapshot(q, (snapshot) => {
+            adsBoard.innerHTML = '';
+            snapshot.forEach((anuncioDoc) => {
+                const anuncio = anuncioDoc.data();
+                const id = anuncioDoc.id; // Obtenemos el ID único del documento
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${anuncio.imagenUrl}">
+                    <h3>${anuncio.titulo}</h3>
+                    <span class="tag">${anuncio.asignatura}</span>
+                    <p class="estado">${anuncio.estado}</p>
+                    <div class="price">${anuncio.precio} €</div>
+                    <div class="contact">${anuncio.contacto}</div>
+                    <button class="delete-btn" data-id="${id}">🗑️ Borrar Anuncio</button>
+                `;
+                adsBoard.appendChild(card);
+            });
+
+            // Asignar función a los botones de borrar
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const idABorrar = e.target.getAttribute('data-id');
+                    if(confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+                        try {
+                            await deleteDoc(doc(db, "anuncios", idABorrar));
+                            alert("Borrado con éxito");
+                        } catch (error) {
+                            alert("Error al borrar");
+                        }
+                    }
+                });
+            });
+        });
+
+        // --- Guardar anuncio ---
+        document.getElementById('adForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = document.getElementById('imagen').files[0];
+            const reader = new FileReader();
+            reader.onload = async (evento) => {
+                await addDoc(collection(db, "anuncios"), {
+                    titulo: document.getElementById('titulo').value,
+                    asignatura: document.getElementById('asignatura').value,
+                    estado: document.getElementById('estado').value,
+                    precio: document.getElementById('precio').value,
+                    contacto: document.getElementById('contacto').value,
+                    imagenUrl: evento.target.result,
+                    fecha: Date.now()
+                });
+                document.getElementById('adForm').reset();
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
