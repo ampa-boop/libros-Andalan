@@ -306,26 +306,43 @@
 
             const file = document.getElementById('imagen').files[0];
             const reader = new FileReader();
-            reader.onload = async (evento) => {
-                try {
-                    await addDoc(collection(db, "anuncios"), {
-                        titulo: document.getElementById('titulo').value,
-                        asignatura: document.getElementById('asignatura').value,
-                        estado: document.getElementById('estado').value,
-                        precio: document.getElementById('precio').value,
-                        contacto: document.getElementById('contacto').value,
-                        imagenUrl: evento.target.result,
-                        fecha: Date.now(),
-                        aprobado: false // 🚨 Entra en estado oculto/pendiente automáticamente
-                    });
-                    document.getElementById('adForm').reset();
-                    alert("¡Libro enviado a revisión! Aparecerá en el muro cuando un administrador lo apruebe.");
-                } catch (err) {
-                    alert("Error al subir. La foto puede ser demasiado grande.");
-                } finally {
-                    btn.innerText = "Subir Anuncio";
-                    btn.disabled = false;
-                }
+          reader.onload = async (evento) => {
+    const img = new Image();
+    img.src = evento.target.result;
+    
+    img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 600; // Reducimos el ancho a 600px
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // Convertimos a base64 con calidad al 70%
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+        try {
+            await addDoc(collection(db, "anuncios"), {
+                titulo: document.getElementById('titulo').value,
+                asignatura: document.getElementById('asignatura').value,
+                estado: document.getElementById('estado').value,
+                precio: document.getElementById('precio').value,
+                contacto: document.getElementById('contacto').value,
+                imagenUrl: dataUrl, // Subimos la versión comprimida
+                fecha: Date.now(),
+                aprobado: false
+            });
+            document.getElementById('adForm').reset();
+            alert("¡Libro enviado a revisión!");
+        } catch (err) {
+            alert("Error: La imagen sigue siendo muy grande. Prueba con una foto menos pesada.");
+        } finally {
+            btn.innerText = "Subir Anuncio";
+            btn.disabled = false;
+        }
+    };
             };
             reader.readAsDataURL(file);
         });
